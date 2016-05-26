@@ -1,0 +1,15 @@
+--中文前要加N
+--select * from INFORMATION_SCHEMA.COLUMNS 
+
+create table dbo.ChnStudent
+(
+	studentnumber int identity(1,1) not null,
+	value nvarchar(100) not null,
+)
+Go
+
+insert into ChnStudent(value) values 
+('小张'),('小李'),(N'小张'),(N'小张')
+
+select * from dbo.ChnStudent
+
