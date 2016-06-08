@@ -1,0 +1,76 @@
+=========================================CRMDB
+create table dbo.CustomerInfo
+(
+	CustomerID nvarchar(100) not null primary key,
+	FirstName nvarchar(100) not null,
+	LastName nvarchar(100) not null
+)
+Go
+
+insert into CustomerInfo(CustomerID,FirstName,LastName) values 
+('001','Jason','Zhang'),
+('002','Peter','Huang'),
+('003','Jason','Hu'),
+('004','Mike','Lee')
+
+select * from dbo.CustomerInfo
+
+==========================================OrderDB
+
+create table dbo.OrderInfo
+(
+	OrderID nvarchar(100) not null primary key,
+	CustomerID nvarchar(100) not null,
+)
+Go
+
+insert into OrderInfo(OrderID,CustomerID) values 
+('2013010100001','001'),
+('2013010100002','001'),
+('2013010100003','002'),
+('2013010100004','002'),
+('2013010100005','002'),
+('2013010100006','003'),
+('2013010100007','004')
+
+select * from dbo.OrderInfo
+
+===========================================¿å¿â²éÑ¯
+
+
+SELECT A.CustomerID,A.FirstName, A.LastName,B.OrderID FROM CRMDB.dbo.CustomerInfo AS A LEFT JOIN OrderDB.dbo.OrderInfo AS B ON A.CustomerID=B.CustomerID
+
+
+
+
+=============================================New Update
+
+CREATE MASTER KEY ENCRYPTION BY PASSWORD = 'Zhanglei520'; 
+CREATE DATABASE SCOPED CREDENTIAL ElasticDBQueryCred 
+WITH IDENTITY = 'leizhang', 
+SECRET = 'Zhanglei520';  
+
+
+CREATE EXTERNAL DATA SOURCE MyElasticDBQueryDataSrc WITH 
+    (TYPE = RDBMS, 
+    LOCATION = 'lcqyvtqri1.database.chinacloudapi.cn', 
+    DATABASE_NAME = 'OrderDB', 
+    CREDENTIAL = ElasticDBQueryCred, 
+) ;
+
+
+CREATE EXTERNAL TABLE dbo.OrderInfo
+(
+	OrderID nvarchar(100) not null,
+	CustomerID nvarchar(100) not null,
+)
+
+WITH 
+( DATA_SOURCE = MyElasticDBQueryDataSrc) 
+
+
+SELECT A.CustomerID,A.FirstName, A.LastName,B.OrderID FROM dbo.CustomerInfo AS A 
+LEFT JOIN dbo.OrderInfo AS B ON A.CustomerID=B.CustomerID
+
+
+
